@@ -1,0 +1,64 @@
+{
+  "name": "@brechtvdv/rdfs2ngsi-ld.js",
+  "version": "0.0.1",
+  "description": "Transform RDFS (JSON-LD) object to NGSI-LD compliant (JSON-LD) object",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "build": "npm run build:ts",
+    "build:ts": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brechtvdv/rdfs2ngsi-ld.js.git"
+  },
+  "keywords": [
+    "RDFS",
+    "NGSI-LD"
+  ],
+  "author": "Brecht Van de Vyvere",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brechtvdv/rdfs2ngsi-ld.js/issues"
+  },
+  "homepage": "https://github.com/brechtvdv/rdfs2ngsi-ld.js#readme",
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))-test.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "dependencies": {
+    "jsonld-context-parser": "^2.1.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "jest": "^27.1.1",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.2"
+  }
+}
