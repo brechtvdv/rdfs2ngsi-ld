@@ -1,21 +1,21 @@
-import { ngsildify } from '../lib/ngsildify';
+import Ngsildify from '../lib/ngsildify';
 
 describe('RDFS 2 NGSI-LD conversion library', () => {
-
+    let ngsildify: Ngsildify;
     beforeAll(() => {
-
+        ngsildify = new Ngsildify();
     });
 
     beforeEach(() => {
 
     })
 
-    test('Ngsildify should be a function', () => {
-        expect(ngsildify).toBeInstanceOf(Function);
+    test('Ngsildify should have a function', () => {
+        expect(ngsildify.ngsildify).toBeInstanceOf(Function);
     });
 
     test('Ngsildify should return an object', async () => {
-        const returnedValue = await ngsildify({});
+        const returnedValue = await ngsildify.ngsildify({});
         expect(returnedValue).toBeInstanceOf(Object);
     });
 
@@ -27,8 +27,7 @@ describe('RDFS 2 NGSI-LD conversion library', () => {
             "Observation.observedProperty": "http://www.wikidata.org/entity/Q48035511",
             "Observation.hasSimpleResult": "8.10 ug/m3"
         };
-        const returnedValue = await ngsildify(input);
-        console.log(returnedValue)
+        const returnedValue = await ngsildify.ngsildify(input);
         const expectedOutput = [{
             "@context": [
                 "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",

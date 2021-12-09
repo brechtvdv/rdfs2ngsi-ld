@@ -42,7 +42,8 @@ npm install @brechtvdv/rdfs2ngsi-ld.js
 We expect an JSON-LD object at the input.
 
 ```javascript
-import { ngsildify } from 'rdfs2ngsi-ld.js';
+import Ngsildify from 'rdfs2ngsi-ld.js';
+const ngsildify = new Ngsildify();
 
 const input = {
     "@context": "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld",
@@ -52,7 +53,7 @@ const input = {
     "Observation.hasSimpleResult": "8.10 ug/m3"
 };
 
-console.log(ngsildify(input));
+console.log(ngsildify.ngsildify(input));
 
 // Output will be an array of NGSI-LD compliant entities
 [{
@@ -76,11 +77,9 @@ console.log(ngsildify(input));
 ## What it does
 
 * Loop over the input object when it's an array
-* Parse the JSON-LD context and add it with NGSI-LD's context
+* Copy the JSON-LD context and add it with NGSI-LD's context
 * loop over all the properties of the JSON object
-* Based on the context:
-  * if the value of the property is an identifier, add a NGSI-LD relationship
-    * create an identifier if not provided, based on the type (or relationship name) and the index
-    * ngsildify the linked object recursively
-  * else add a NGSI-LD property
-
+* Based on the value of the property:
+  * if the value is a string and starts with http or has a @value key, add as NGSI-LD Property
+  * else add as NGSI-LD relationship
+    * create an identifier if not provided, based on the subject id, relation and index
