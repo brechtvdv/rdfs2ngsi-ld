@@ -1,4 +1,4 @@
-import Ngsildify from '../lib/ngsildify';
+import { Ngsildify } from '../lib/ngsildify';
 
 describe('RDFS 2 NGSI-LD conversion library', () => {
     let ngsildify: Ngsildify;

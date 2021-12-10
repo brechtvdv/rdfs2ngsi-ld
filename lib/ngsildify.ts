@@ -1,6 +1,6 @@
 import {JsonLdContext} from "jsonld-context-parser";
 
-export default class Ngsildify {
+export class Ngsildify {
     private resultArray: any = [];
     private jsonLdContext: JsonLdContext;
 

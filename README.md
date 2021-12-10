@@ -42,7 +42,7 @@ npm install @brechtvdv/rdfs2ngsi-ld.js
 We expect an JSON-LD object at the input.
 
 ```javascript
-import Ngsildify from 'rdfs2ngsi-ld.js';
+import { Ngsildify } from 'rdfs2ngsi-ld.js';
 const ngsildify = new Ngsildify();
 
 const input = {
