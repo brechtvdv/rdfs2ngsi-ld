@@ -2,74 +2,126 @@ import {JsonLdContext} from "jsonld-context-parser";
 
 export class Ngsildify {
     private resultArray: any = [];
-    private jsonLdContext: JsonLdContext;
+    private jsonLdContext: JsonLdContext = "";
 
     public constructor() {
     }
 
-    public async ngsildify(input: any): Promise<any[]> {
+    public async transform(input: any): Promise<any[]> {
+        let context: any = {
+            "@context": [
+                "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+            ],
+        };
+        let rootObjects: any[] = [];
         if (Array.isArray(input)) {
-            for (let i in input) if (typeof input[i] === "object") this.resultArray = this.resultArray.concat(await this.ngsildify(input[i]));
-        } else if (typeof input === "object" && (input["@id"] || input["id"])) {
-            const id = this.getIdFromValue(input, "",  "", 0);
-            let result: any = {
-                "@context": [
-                    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
-                ]
-            };
-            // Add context from input to result
-            if (input["@context"]) result["@context"] = result["@context"].concat(input["@context"]);
-            // Set context to be used across entities
-            if (!this.jsonLdContext) this.jsonLdContext = result["@context"];
+            for (let i in input) {
+                // reset context on new object!
+                context = {
+                    "@context": [
+                        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+                    ],
+                };
+                if (typeof input[i] === "object") {
+                    if (input[i]["@context"]) {
+                        // Add context from input to result
+                        context["@context"] = context["@context"].concat(
+                            input[i]["@context"]
+                        );
+                    }
+                    // Set context to be used across entities
+                    this.jsonLdContext = context["@context"];
+                    rootObjects = rootObjects.concat(await this.handleRoot(input[i]));
+                }
+            }
+        } else {
+            if (input["@context"]) {
+                // Add context from input to result
+                context["@context"] = context["@context"].concat(input["@context"]);
+                // Set context to be used across entities
+                this.jsonLdContext = context["@context"];
+            }
 
-            // fetch provided context and look up the json key that is used for identifiers
+            rootObjects.push(await this.handleRoot(input));
+        }
+
+        this.resultArray.push(...rootObjects);
+        return this.resultArray;
+    }
+
+    protected async handleRoot(input: any): Promise<any> {
+        if (typeof input === "object" && (input["@id"] || input["id"])) {
+            const id = this.getIdFromValue(input, "", "", 1);
+            let result: any = {
+                "@context": this.jsonLdContext,
+            };
             for (const [key, value] of Object.entries(input)) {
                 if (key != "@context") {
                     if (Array.isArray(value)) {
                         let expandedValueResult = [];
-                        for (let v in value) expandedValueResult.push(await this.expandValue(value[v], id, key, parseInt(v)));
+                        for (let v in value)
+                            expandedValueResult.push(await this.handleValue(value[v], id, key, parseInt(v)));
                         result[key] = expandedValueResult;
-                    } else if (key === "@id" || key === "id" || key === "@type" || key === "type") {
+                    } else if (
+                        key === "@id" ||
+                        key === "id" ||
+                        key === "@type" ||
+                        key === "type"
+                    ) {
                         result[key] = value;
                     } else {
-                        result[key] = await this.expandValue(value, id, key, 1);
+                        result[key] = await this.handleValue(value, id, key, 1);
                     }
                 }
             }
-            this.resultArray.push(result);
+            return result;
         }
-        return this.resultArray;
+        return input;
     }
 
-    protected async expandValue(value: any, prevId: string, relation: string, index: number) {
-        // Property when value is not a string starting with http://
-        //                     has a @value key
-        if (Array.isArray(value)) for (let v in value) this.expandValue(value[v], prevId, relation, parseInt(v))
-        if ((typeof value === "string" && !value.startsWith('http'))
-            || (typeof value === "object" && value["@value"])) {
+    protected async handleValue(value: any, prevId: string, relation: string, index:number): Promise<any> {
+        if (
+            (typeof value === "object" &&
+            relation !== "@type" &&
+            relation !== "type")
+        ) {
+            const id = this.getIdFromValue(value, prevId, relation, index);
+            if (!value["id"] && !value["@id"]) value["@id"] = id; // make sure value has an identifier
+            // create new result from this object and return the relationship
+            const newResult = await this.handleRoot(value);
+            this.resultArray.push(newResult);
+            return {
+                "@type": "Relationship",
+                object: id,
+            };
+        } else if (
+            typeof value === "string" && value.startsWith('http')
+        ) {
+            return {
+                "@type": "Relationship",
+                object: value,
+            }
+        } else if (
+            typeof value === "string" &&
+            relation !== "@type" &&
+            relation !== "type"
+        ) {
+            // create new property from this string and return the value
             return {
                 "@type": "Property",
-                "value": value
-            }
+                value: value,
+            };
         } else {
-            // Relationship
-            const id = this.getIdFromValue(value, prevId, relation, index);
-            if (id) {
-                // if (!(value instanceof "string") && !value["@id"] && !value["id"]) value["@id"] = id; // make sure identifier is filled in
-                // const expandedValue = await this.ngsildify(value);
-                return {
-                    "@type": "Relationship",
-                    "object": id
-                }
-            }
+            return value;
         }
     }
 
     protected getIdFromValue(value: any, prevId: string, relation: string, index: number) {
-        if (typeof value === "string") return value; // value is only a string
-        else if (value['@id']) return value['@id'];
-        else if (value['id']) return value['id'];
-        else return prevId + "/" + relation + "/" + index;
+        if (typeof value === "string") return value;
+        // value is only a string
+        else if (value["@id"]) return value["@id"];
+        else if (value["id"]) return value["id"];
+        else return prevId + "/" + relation.toLowerCase() + "/" + index;
     }
 }
 

@@ -53,7 +53,7 @@ const input = {
     "Observation.hasSimpleResult": "8.10 ug/m3"
 };
 
-console.log(ngsildify.ngsildify(input));
+console.log(ngsildify.transform(input));
 
 // Output will be an array of NGSI-LD compliant entities
 [{
