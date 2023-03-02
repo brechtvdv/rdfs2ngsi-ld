@@ -8,6 +8,7 @@ export class Ngsildify {
     }
 
     public async transform(input: any): Promise<any[]> {
+        this.resultArray = [];
         let context: any = {
             "@context": [
                 "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
@@ -82,10 +83,11 @@ export class Ngsildify {
             relation !== "@type" &&
             relation !== "type")) {
             const typeOfValue = value["@type"];
+            const startsWith: boolean = typeof typeOfValue.startsWith === 'function';
 
             // if the value is actually typed as Literal or XMLSchema type, don't handle it as root
             if ((value["@language"]) || 
-                (typeOfValue && (
+                (typeOfValue && startsWith && (
                     typeOfValue.startsWith('http://www.w3.org/2000/01/rdf-schema#Literal') || 
                     typeOfValue.startsWith('http://www.w3.org/2001/XMLSchema#') || 
                     typeOfValue.startsWith('http://www.opengis.net/ont/geosparql#wktLiteral') || 
