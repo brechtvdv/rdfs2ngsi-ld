@@ -25,9 +25,7 @@ export class Ngsildify {
                 if (typeof input[i] === "object") {
                     if (input[i]["@context"]) {
                         // Add context from input to result
-                        context["@context"] = context["@context"].concat(
-                            input[i]["@context"]
-                        );
+                        context["@context"] = context["@context"].concat(input[i]["@context"]);
                     }
                     // Set context to be used across entities
                     this.jsonLdContext = context["@context"];
@@ -38,15 +36,15 @@ export class Ngsildify {
             if (input["@context"]) {
                 // Add context from input to result
                 context["@context"] = context["@context"].concat(input["@context"]);
-                // Set context to be used across entities
-                this.jsonLdContext = context["@context"];
             }
-
-            rootObjects.push(await this.handleRoot(input));
+            // Set context to be used across entities
+            this.jsonLdContext = context["@context"];
+            const tempHandleRoot = await this.handleRoot(input);
+            if (tempHandleRoot != null)
+                rootObjects.push(tempHandleRoot);
         }
-
         this.resultArray.push(...rootObjects);
-        return this.resultArray;
+        return this.resultArray
     }
 
     protected async handleRoot(input: any): Promise<any> {
@@ -57,55 +55,74 @@ export class Ngsildify {
             };
             for (const [key, value] of Object.entries(input)) {
                 if (key != "@context") {
-                    if (Array.isArray(value)) {
+                    if (Array.isArray(value) && key != "@type" && key != "type") {
                         let expandedValueResult = [];
                         for (let v in value)
                             expandedValueResult.push(await this.handleValue(value[v], id, key, parseInt(v)));
                         result[key] = expandedValueResult;
-                    } else if (
-                        key === "@id" ||
+                    } else if (key === "@id" ||
                         key === "id" ||
                         key === "@type" ||
-                        key === "type"
-                    ) {
+                        key === "type") {
                         result[key] = value;
                     } else {
                         result[key] = await this.handleValue(value, id, key, 1);
                     }
                 }
             }
+            if (!result["@type"])
+                result["@type"] = "Entity"; // fallback when no @type found
             return result;
         }
         return input;
     }
 
     protected async handleValue(value: any, prevId: string, relation: string, index:number): Promise<any> {
-        if (
-            (typeof value === "object" &&
+        if ((typeof value === "object" &&
             relation !== "@type" &&
-            relation !== "type")
-        ) {
-            const id = this.getIdFromValue(value, prevId, relation, index);
-            if (!value["id"] && !value["@id"]) value["@id"] = id; // make sure value has an identifier
-            // create new result from this object and return the relationship
-            const newResult = await this.handleRoot(value);
-            this.resultArray.push(newResult);
-            return {
-                "@type": "Relationship",
-                object: id,
-            };
-        } else if (
-            typeof value === "string" && value.startsWith('http')
-        ) {
+            relation !== "type")) {
+            const typeOfValue = value["@type"];
+
+            // if the value is actually typed as Literal or XMLSchema type, don't handle it as root
+            if ((value["@language"]) || 
+                (typeOfValue && (
+                    typeOfValue.startsWith('http://www.w3.org/2000/01/rdf-schema#Literal') || 
+                    typeOfValue.startsWith('http://www.w3.org/2001/XMLSchema#') || 
+                    typeOfValue.startsWith('http://www.opengis.net/ont/geosparql#wktLiteral') || 
+                    typeOfValue.startsWith('http://w3id.org/lindt/custom_datatypes#')))) {
+                const valueOfValue = value["@value"];
+                const result: any = {
+                    "@type": "Property",
+                    value: {
+                        "@value": valueOfValue,
+                        "@type": typeOfValue
+                    },
+                };
+                if(value["@language"]) {
+                    result["@language"] = value["@language"]
+                }
+                return result;
+            } else {
+                // go deeper
+                const id = this.getIdFromValue(value, prevId, relation, index);
+                if (!value["id"] && !value["@id"]) value["@id"] = id; // make sure value has an identifier
+                // create new result from this object and return the relationship
+                const newResult = await this.handleRoot(value);
+                if (newResult && newResult["@type"])
+                    this.resultArray.push(newResult);
+                return {
+                    "@type": "Relationship",
+                    object: id,
+                };
+            }
+        } else if (typeof value === "string" && value.startsWith('http')) {
             return {
                 "@type": "Relationship",
                 object: value,
-            }
-        } else if (
-            typeof value === "string" &&
+            };
+        } else if (typeof value === "string" &&
             relation !== "@type" &&
-            relation !== "type"
-        ) {
+            relation !== "type") {
             // create new property from this string and return the value
             return {
                 "@type": "Property",
