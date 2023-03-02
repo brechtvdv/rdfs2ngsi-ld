@@ -52,11 +52,10 @@
     ],
     "collectCoverage": true
   },
-  "dependencies": {
-  },
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "jest": "^27.1.1",
+    "jsonld-context-parser": "^2.3.0",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.2"
   }
