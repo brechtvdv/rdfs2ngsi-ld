@@ -1,13 +1,13 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-    "module": "commonjs",
+        "module": "commonjs",
         "lib": [
-        "es6",
-        "es2019",
-        "dom",
-        "esnext.asynciterable"
-    ],
+            "es6",
+            "es2019",
+            "dom",
+            "esnext.asynciterable"
+        ],
         "target": "es2017",
         "removeComments": false,
         "preserveConstEnums": true,
@@ -16,18 +16,18 @@
         "declaration": true,
         "resolveJsonModule": true,
         "downlevelIteration": true,
-
         "strict": true,
         "strictFunctionTypes": false,
         "strictPropertyInitialization": false,
-        "allowSyntheticDefaultImports": true
-},
+        "allowSyntheticDefaultImports": true,
+        "outDir": "dist"
+    },
     "include": [
-    "index.ts",
-    "lib/**/*"
-],
+        "index.ts",
+        "lib/**/*"
+    ],
     "exclude": [
-    "**/node_modules",
-    "**/test/*"
-]
+        "**/node_modules",
+        "**/test/*"
+    ]
 }
