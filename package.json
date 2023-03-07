@@ -1,6 +1,6 @@
 {
   "name": "@brechtvdv/rdfs2ngsi-ld.js",
-  "version": "0.0.6",
+  "version": "0.0.14",
   "description": "Transform RDFS (JSON-LD) object to NGSI-LD compliant (JSON-LD) object",
   "main": "index.js",
   "publishConfig": {
@@ -53,6 +53,8 @@
     "collectCoverage": true
   },
   "dependencies": {
+    "jsonld-context-parser": "^2.3.0",
+    "wkt": "^0.1.1"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
