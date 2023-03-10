@@ -179,12 +179,13 @@ export class Ngsildify {
         ) {
             const id = this.getIdFromValue(value, prevId, relation, index);
             if (!value["id"] && !value["@id"]) value["id"] = id; // make sure value has an identifier
-            if (value["type" || value["@type"]]) {
-                // create new result from this object and return the relationship
-                const newResult = await this.handleRoot(value);
-                if (newResult && (newResult["type"] || newResult["@type"])) {
-                    this.resultArray.push(newResult);
-                }
+            if (!value["type"] && value["@type"]) {
+                value["type"] = "Entity";
+            }
+            // create new result from this object and return the relationship
+            const newResult = await this.handleRoot(value);
+            if (newResult) {
+                this.resultArray.push(newResult);
             }
 
             // If isVersionOf, materialize object with observedAt
