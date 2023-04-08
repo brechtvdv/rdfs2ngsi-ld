@@ -6,10 +6,6 @@ describe('RDFS 2 NGSI-LD conversion library', () => {
         ngsildify = new Ngsildify();
     });
 
-    beforeEach(() => {
-
-    })
-
     test('Ngsildify should have a function', () => {
         expect(ngsildify.transform).toBeInstanceOf(Function);
     });
@@ -33,14 +29,14 @@ describe('RDFS 2 NGSI-LD conversion library', () => {
                 "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
                 "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
             ],
-            "@id": "https://lodi.ilabt.imec.be/odala/data/observations/16584343831",
-            "@type": "Observation",
+            "id": "https://lodi.ilabt.imec.be/odala/data/observations/16584343831",
+            "type": "Observation",
             "Observation.observedProperty": {
-                "@type": "Relationship",
+                "type": "Relationship",
                 "object": "http://www.wikidata.org/entity/Q48035511"
             },
             "Observation.hasSimpleResult": {
-                "@type": "Property",
+                "type": "Property",
                 "value": "8.10 ug/m3"
             }
         }];
@@ -77,69 +73,91 @@ describe('RDFS 2 NGSI-LD conversion library', () => {
                 "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
                 "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
             ],
-            "@type": "Geometry",
+            "type": "Geometry",
             "Geometry.asWkt": {
-                "@type": "Property",
+                "type": "Property",
                 "value": "<http://www.opengis.net/def/crs/EPSG/0/4979> POINT(50.86127751869 4.28904533370 45.9)"
             },
-            "@id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1"
+            "id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1"
         },
-            {
-                "@context": [
-                    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-                    "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
-                ],
-                "@type": "SpatialSamplingFeature",
-                "SamplingFeature.sampledFeature": {
-                    "@type": "Relationship",
-                    "object": "http://www.wikidata.org/entity/Q56245086"
-                },
-                "http://www.w3.org/ns/locn#geometry": {
-                    "@type": "Relationship",
-                    "object": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1"
-                },
-                "@id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1"
+        {
+            "@context": [
+                "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+                "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
+            ],
+            "type": "SpatialSamplingFeature",
+            "SamplingFeature.sampledFeature": {
+                "type": "Relationship",
+                "object": "http://www.wikidata.org/entity/Q56245086"
             },
-            {
-                "@context": [
-                    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-                    "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
-                ],
-                "@type": [
-                    "Sensor",
-                    "Device"
-                ],
-                "@id": "https://lodi.ilabt.imec.be/odala/data/sensors/24653",
-                "Device.manufacturerName": {
-                    "@type": "Property",
-                    "value": "Nova Fitness"
-                },
-                "Device.modelName": {
-                    "@type": "Property",
-                    "value": "SDS011"
-                }
+            "http://www.w3.org/ns/locn#geometry": {
+                "type": "Relationship",
+                "object": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1"
             },
-            {
-                "@context": [
-                    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-                    "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
-                ],
-                "@id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782",
-                "@type": "ObservationCollection",
-                "ObservationCollection.hasFeatureOfInterest": {
-                    "@type": "Relationship",
-                    "object": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1"
-                },
-                "ObservationCollection.madeBySensor": {
-                    "@type": "Relationship",
-                    "object": "https://lodi.ilabt.imec.be/odala/data/sensors/24653"
-                },
-                "ObservationCollection.resultTime": {
-                    "@type": "Property",
-                    "value": "2021-12-15T10:14:05Z"
-                }
+            "id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1"
+        },
+        {
+            "@context": [
+                "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+                "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
+            ],
+            "type": [
+                "Sensor",
+                "Device"
+            ],
+            "id": "https://lodi.ilabt.imec.be/odala/data/sensors/24653",
+            "Device.manufacturerName": {
+                "type": "Property",
+                "value": "Nova Fitness"
+            },
+            "Device.modelName": {
+                "type": "Property",
+                "value": "SDS011"
             }
+        },
+        {
+            "@context": [
+                "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+                "https://brechtvdv.github.io/demo-data/OSLO-airAndWater-Core-ap.jsonld"
+            ],
+            "id": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782",
+            "type": "ObservationCollection",
+            "ObservationCollection.hasFeatureOfInterest": {
+                "type": "Relationship",
+                "object": "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1"
+            },
+            "ObservationCollection.madeBySensor": {
+                "type": "Relationship",
+                "object": "https://lodi.ilabt.imec.be/odala/data/sensors/24653"
+            },
+            "ObservationCollection.resultTime": {
+                "type": "Property",
+                "value": "2021-12-15T10:14:05Z"
+            }
+        }
         ];
+        expect(returnedValue).toEqual(expectedOutput);
+    });
+
+    test('Ngsildify should transform a simple SKOS Concept', async () => {
+        const input = {
+            '@id': 'https://blue-bike.be/resourcereports/type/92#2022-09-08T10:12:26',
+            '@type': 'http://www.w3.org/2004/02/skos/core#Concept',
+            'http://www.w3.org/2004/02/skos/core#prefLabel': { 
+                '@language': 'en', 
+                '@value': 'vehicle' 
+            }
+        };
+        const returnedValue = await ngsildify.transform(input);
+        const expectedOutput = [{
+            "@context": [ "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld" ],
+            "id": "https://blue-bike.be/resourcereports/type/92#2022-09-08T10:12:26",
+            "type": "http://www.w3.org/2004/02/skos/core#Concept",
+            "http://www.w3.org/2004/02/skos/core#prefLabel": {
+                "type": "Property",
+                "value": "vehicle"
+            }
+        }];
         expect(returnedValue).toEqual(expectedOutput);
     });
 });

@@ -1,4 +1,4 @@
-import {JsonLdContext} from "jsonld-context-parser";
+import { JsonLdContext } from "jsonld-context-parser";
 const { parse } = require('wkt');
 
 export interface NgsildifyOptions {
@@ -8,6 +8,7 @@ export interface NgsildifyOptions {
 export class Ngsildify {
     private resultArray: any = [];
     private jsonLdContext: JsonLdContext = "";
+    // TODO: Remove hardcoded properties. This should be done via configuration
     private timestampPath: string = "http://www.w3.org/ns/prov#generatedAtTime";
     private versionOfPath: string = "http://purl.org/dc/terms/isVersionOf";
     private observedAt: string;
@@ -75,15 +76,30 @@ export class Ngsildify {
             // If isVersionOf, materialize object
             if (input[this.versionOfPath]) {
                 let materializedObject = JSON.parse(JSON.stringify(input));
-                if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['id']) materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
-                else if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['@id']) materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
-                else materializedObject["id"] = materializedObject[this.versionOfPath];
+
+                if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['id']) {
+                    materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
+                } else if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['@id']) {
+                    materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
+                } else {
+                    materializedObject["id"] = materializedObject[this.versionOfPath];
+                }
+
                 delete materializedObject[this.versionOfPath];
-                if (materializedObject['@id']) delete materializedObject['@id'];
+
+                if (materializedObject['@id']) {
+                    delete materializedObject['@id'];
+                }
+
                 if (materializedObject[this.timestampPath]) {
-                    if (materializedObject[this.timestampPath]['value']) this.observedAt = materializedObject[this.timestampPath]['value'];
-                    else if (materializedObject[this.timestampPath]['@value']) this.observedAt = materializedObject[this.timestampPath]['@value'];
-                    else this.observedAt = materializedObject[this.timestampPath];
+                    if (materializedObject[this.timestampPath]['value']) {
+                        this.observedAt = materializedObject[this.timestampPath]['value'];
+                    } else if (materializedObject[this.timestampPath]['@value']) {
+                        this.observedAt = materializedObject[this.timestampPath]['@value'];
+                    } else {
+                        this.observedAt = materializedObject[this.timestampPath];
+                    }
+
                     delete materializedObject[this.timestampPath];
                 }
                 rootObjects = rootObjects.concat(await this.handleRoot(materializedObject));
@@ -109,19 +125,23 @@ export class Ngsildify {
                         for (let v in value)
                             expandedValueResult.push(await this.handleValue(value[v], id, key, parseInt(v)));
                         result[key] = expandedValueResult;
-                    } else if (key === "@id" ||
-                                key === "id"
-                    ) {
+                    } else if(key === "id") {
                         result[key] = value;
                         if (this.observedAt) result['observedAt'] = this.observedAt;
-                    } else if (key === "@type" ||
-                                key === "type") {
+                    } else if (key === "@id") {
+                        result["id"] = value;
+                        delete result["@id"];
+                        if (this.observedAt) result['observedAt'] = this.observedAt;
+                    } else if (key === "type") {
                         result[key] = value;
+                    } else if (key === "@type") {
+                        result["type"] = value;
+                        delete result["@type"];
                     } else {
                         result[key] = await this.handleValue(value, id, key, 1);
                         // Add transformation of WKT to GeoJSON
                         if (key === "http://www.opengis.net/ont/geosparql#asWKT") {
-                            const v2 = <any> value;
+                            const v2 = <any>value;
                             if (v2 && (v2['@value'] || v2['value'])) {
                                 let v = v2['@value'] ? v2['@value'] : (v2['value'] ? v2['value'] : '');
                                 // Remove CRS
@@ -134,11 +154,11 @@ export class Ngsildify {
                             }
                         }
                         if (key === "https://parktrack.geosparc.com/parkingBay/geometry") {
-                            let v2 = <string> value;
+                            let v2 = <string>value;
                             // Remove CRS
                             v2 = this.removeCRS(v2);
                             const geoJSON = parse(v2);
-                            if (geoJSON) {
+                            if (geoJSON) {
                                 result["location"] = {
                                     "type": "GeoProperty",
                                     "value": geoJSON
@@ -158,15 +178,18 @@ export class Ngsildify {
 
     private removeCRS(v: string): string {
         if (v.indexOf('<') != -1 && v.indexOf('>') != -1) {
-            return v.replace(v.substring(v.indexOf('<'), v.indexOf('>')+2), '');
+            return v.replace(v.substring(v.indexOf('<'), v.indexOf('>') + 2), '');
         } else {
             return v;
         }
     }
 
-    protected async handleValue(value: any, prevId: string, relation: string, index:number): Promise<any> {
+    protected async handleValue(value: any, prevId: string, relation: string, index: number): Promise<any> {
         let res;
-        if (typeof value === "object" && (value['value'] || value['@value'] || value['https://parktrack.geosparc.com/parkingBay/status#value'])) {
+        if (typeof value === "object" 
+            && (value['value'] 
+            || value['@value'] 
+            || value['https://parktrack.geosparc.com/parkingBay/status#value'])) {
             // TODO use language, datetime property etc
             const v = value['value'] ? value['value'] : value['@value'] ? value['@value'] : value['https://parktrack.geosparc.com/parkingBay/status#value'];
             res = {
@@ -179,7 +202,7 @@ export class Ngsildify {
         ) {
             const id = this.getIdFromValue(value, prevId, relation, index);
             if (!value["id"] && !value["@id"]) value["id"] = id; // make sure value has an identifier
-            if (value["type" || value["@type"]]) {
+            if (value["type"] || value["@type"]) {
                 // create new result from this object and return the relationship
                 const newResult = await this.handleRoot(value);
                 if (newResult && (newResult["type"] || newResult["@type"])) {
