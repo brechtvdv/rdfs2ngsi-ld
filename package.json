@@ -1,6 +1,6 @@
 {
   "name": "@brechtvdv/rdfs2ngsi-ld.js",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Transform RDFS (JSON-LD) object to NGSI-LD compliant (JSON-LD) object",
   "main": "dist/index.js",
   "publishConfig": {
