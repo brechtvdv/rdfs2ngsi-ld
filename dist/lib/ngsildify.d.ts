@@ -11,7 +11,8 @@ export declare class Ngsildify {
     constructor(options?: NgsildifyOptions);
     transform(input: any): Promise<any[]>;
     protected handleRoot(input: any): Promise<any>;
-    private removeCRS;
+    private materializeObject;
     protected handleValue(value: any, prevId: string, relation: string, index: number): Promise<any>;
     protected getIdFromValue(value: any, prevId: string, relation: string, index: number): string;
+    private removeCRS;
 }

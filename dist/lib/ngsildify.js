@@ -6,7 +6,6 @@ class Ngsildify {
     constructor(options) {
         this.resultArray = [];
         this.jsonLdContext = "";
-        // TODO: Remove hardcoded properties. This should be done via configuration
         this.timestampPath = "http://www.w3.org/ns/prov#generatedAtTime";
         this.versionOfPath = "http://purl.org/dc/terms/isVersionOf";
         if (options && options.timestampPath)
@@ -22,48 +21,36 @@ class Ngsildify {
             ],
         };
         let rootObjects = [];
+        // Check if it is temporal entity and extract value
+        if (input[this.timestampPath]) {
+            const ts = input[this.timestampPath];
+            if (typeof ts === "string") {
+                this.observedAt = ts;
+            }
+            else if (typeof ts === "object" && ts["@value"]) {
+                this.observedAt = ts["@value"];
+            }
+        }
         if (Array.isArray(input)) {
-            for (let i in input) {
+            for (let obj of input) {
                 // reset context on new object!
                 context = {
                     "@context": [
                         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
                     ],
                 };
-                if (typeof input[i] === "object") {
-                    if (input[i]["@context"]) {
+                if (typeof obj === "object") {
+                    if (obj["@context"]) {
                         // Add context from input to result
-                        context["@context"] = context["@context"].concat(input[i]["@context"]);
+                        context["@context"] = context["@context"].concat(obj["@context"]);
                     }
                     // Set context to be used across entities
                     this.jsonLdContext = context["@context"];
                     // If isVersionOf and timestamp, materialize object with observedAt
-                    if (input[i][this.versionOfPath]) {
-                        let materializedObject = JSON.parse(JSON.stringify(input[i]));
-                        if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['id'])
-                            materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
-                        else if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['@id'])
-                            materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
-                        else
-                            materializedObject["id"] = materializedObject[this.versionOfPath];
-                        delete materializedObject[this.versionOfPath];
-                        if (materializedObject['@id'])
-                            delete materializedObject['@id'];
-                        if (materializedObject[this.timestampPath]) {
-                            if (materializedObject[this.timestampPath]['value'])
-                                this.observedAt = materializedObject[this.timestampPath]['value'];
-                            else if (materializedObject[this.timestampPath]['@value'])
-                                this.observedAt = materializedObject[this.timestampPath]['@value'];
-                            else
-                                this.observedAt = materializedObject[this.timestampPath];
-                            delete materializedObject[this.timestampPath];
-                        }
-                        const tempMaterializedHandleRoot = await this.handleRoot(materializedObject);
-                        if (tempMaterializedHandleRoot != null) {
-                            rootObjects.push(tempMaterializedHandleRoot);
-                        }
+                    if (obj[this.versionOfPath]) {
+                        obj = this.materializeObject(obj);
                     }
-                    const tempHandleRoot = await this.handleRoot(input[i]);
+                    const tempHandleRoot = await this.handleRoot(obj);
                     if (tempHandleRoot != null) {
                         rootObjects.push(tempHandleRoot);
                     }
@@ -79,33 +66,7 @@ class Ngsildify {
             this.jsonLdContext = context["@context"];
             // If isVersionOf, materialize object
             if (input[this.versionOfPath]) {
-                let materializedObject = JSON.parse(JSON.stringify(input));
-                if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['id']) {
-                    materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
-                }
-                else if (materializedObject[this.versionOfPath] && materializedObject[this.versionOfPath]['@id']) {
-                    materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
-                }
-                else {
-                    materializedObject["id"] = materializedObject[this.versionOfPath];
-                }
-                delete materializedObject[this.versionOfPath];
-                if (materializedObject['@id']) {
-                    delete materializedObject['@id'];
-                }
-                if (materializedObject[this.timestampPath]) {
-                    if (materializedObject[this.timestampPath]['value']) {
-                        this.observedAt = materializedObject[this.timestampPath]['value'];
-                    }
-                    else if (materializedObject[this.timestampPath]['@value']) {
-                        this.observedAt = materializedObject[this.timestampPath]['@value'];
-                    }
-                    else {
-                        this.observedAt = materializedObject[this.timestampPath];
-                    }
-                    delete materializedObject[this.timestampPath];
-                }
-                rootObjects = rootObjects.concat(await this.handleRoot(materializedObject));
+                input = this.materializeObject(input);
             }
             const tempHandleRoot = await this.handleRoot(input);
             if (tempHandleRoot != null)
@@ -184,13 +145,36 @@ class Ngsildify {
         }
         return input;
     }
-    removeCRS(v) {
-        if (v.indexOf('<') != -1 && v.indexOf('>') != -1) {
-            return v.replace(v.substring(v.indexOf('<'), v.indexOf('>') + 2), '');
+    materializeObject(input) {
+        const materializedObject = Object.assign({}, input);
+        if (materializedObject[this.versionOfPath]) {
+            if (materializedObject[this.versionOfPath]['id']) {
+                materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
+            }
+            else if (materializedObject[this.versionOfPath]['@id']) {
+                materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
+            }
+            else {
+                materializedObject["id"] = materializedObject[this.versionOfPath];
+            }
         }
-        else {
-            return v;
+        delete materializedObject[this.versionOfPath];
+        if (materializedObject['@id']) {
+            delete materializedObject['@id'];
         }
+        if (materializedObject[this.timestampPath]) {
+            if (materializedObject[this.timestampPath]['value']) {
+                this.observedAt = materializedObject[this.timestampPath]['value'];
+            }
+            else if (materializedObject[this.timestampPath]['@value']) {
+                this.observedAt = materializedObject[this.timestampPath]['@value'];
+            }
+            else {
+                this.observedAt = materializedObject[this.timestampPath];
+            }
+            delete materializedObject[this.timestampPath];
+        }
+        return materializedObject;
     }
     async handleValue(value, prevId, relation, index) {
         let res;
@@ -199,7 +183,9 @@ class Ngsildify {
                 || value['@value']
                 || value['https://parktrack.geosparc.com/parkingBay/status#value'])) {
             // TODO use language, datetime property etc
-            const v = value['value'] ? value['value'] : value['@value'] ? value['@value'] : value['https://parktrack.geosparc.com/parkingBay/status#value'];
+            const v = value['value'] ? value['value']
+                : value['@value'] ? value['@value']
+                    : value['https://parktrack.geosparc.com/parkingBay/status#value'];
             res = {
                 "type": "Property",
                 value: v
@@ -209,30 +195,19 @@ class Ngsildify {
             relation !== "@type" &&
             relation !== "type") {
             const id = this.getIdFromValue(value, prevId, relation, index);
+            // make sure value has an identifier
             if (!value["id"] && !value["@id"])
-                value["id"] = id; // make sure value has an identifier
+                value["id"] = id;
+            // If isVersionOf, materialize object with observedAt
+            if (value[this.versionOfPath]) {
+                value = this.materializeObject(value);
+            }
             if (value["type"] || value["@type"]) {
                 // create new result from this object and return the relationship
                 const newResult = await this.handleRoot(value);
                 if (newResult && (newResult["type"] || newResult["@type"])) {
                     this.resultArray.push(newResult);
                 }
-            }
-            // If isVersionOf, materialize object with observedAt
-            if (value[this.versionOfPath] && (value[this.versionOfPath].id || value[this.versionOfPath]['@id'])) {
-                let materializedValue = JSON.parse(JSON.stringify(value)); // clone
-                materializedValue["id"] = materializedValue[this.versionOfPath].id ? materializedValue[this.versionOfPath].id : materializedValue[this.versionOfPath]['@id'] ? materializedValue[this.versionOfPath]['@id'] : id;
-                delete materializedValue[this.versionOfPath];
-                materializedValue["type"] = materializedValue["type"] ? materializedValue["type"] : materializedValue["@type"] ? materializedValue["@type"] : "Entity";
-                if (value[this.timestampPath]) {
-                    materializedValue["observedAt"] = materializedValue[this.timestampPath];
-                    delete materializedValue[this.timestampPath];
-                }
-                else if (this.observedAt) {
-                    materializedValue["observedAt"] = this.observedAt;
-                }
-                const materializedResult = await this.handleRoot(materializedValue);
-                this.resultArray.push(materializedResult);
             }
             res = {
                 "type": "Relationship",
@@ -277,6 +252,14 @@ class Ngsildify {
         else
             id = prevId + "/" + relation.toLowerCase() + "/" + index;
         return id;
+    }
+    removeCRS(v) {
+        if (v.indexOf('<') != -1 && v.indexOf('>') != -1) {
+            return v.replace(v.substring(v.indexOf('<'), v.indexOf('>') + 2), '');
+        }
+        else {
+            return v;
+        }
     }
 }
 exports.Ngsildify = Ngsildify;
