@@ -490,7 +490,7 @@ describe('RDFS 2 NGSI-LD conversion library', () => {
                 },
                 "https://purl.eu/ns/mobility/passenger-transport-hubs#location": {
                     "type": "Relationship",
-                    "object": "https://blue-bike.be/stations/103#2022-09-08T10:11:03",
+                    "object": "https://blue-bike.be/stations/103",
                     "observedAt": "2022-09-08T10:11:03"
                 },
                 "https://purl.eu/ns/mobility/passenger-transport-hubs#number": {

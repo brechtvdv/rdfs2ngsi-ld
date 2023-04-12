@@ -84,11 +84,11 @@ export class Ngsildify {
     protected async handleRoot(input: any): Promise<any> {
         if (typeof input === "object" && (input["@id"] || input["id"])) {
             const id = this.getIdFromValue(input, "", "", 1);
-            
+
             let result: any = {
                 "@context": this.jsonLdContext,
             };
-            
+
             for (const [key, value] of Object.entries(input)) {
                 if (key != "@context") {
                     if (Array.isArray(value) && key != "@type" && key != "type") {
@@ -150,16 +150,15 @@ export class Ngsildify {
     private materializeObject(input: any): any {
         const materializedObject = Object.assign({}, input);
 
-        if (materializedObject[this.versionOfPath]) {
-            if (materializedObject[this.versionOfPath]['id']) {
-                materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
-            } else if (materializedObject[this.versionOfPath]['@id']) {
-                materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
-            } else {
-                materializedObject["id"] = materializedObject[this.versionOfPath];
-            }
+        if (materializedObject[this.versionOfPath]['id']) {
+            materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
+        } else if (materializedObject[this.versionOfPath]['@id']) {
+            materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
+        } else {
+            materializedObject["id"] = materializedObject[this.versionOfPath];
         }
-
+        
+        // Delete version metadata
         delete materializedObject[this.versionOfPath];
 
         if (materializedObject['@id']) {
@@ -199,13 +198,17 @@ export class Ngsildify {
             relation !== "@type" &&
             relation !== "type"
         ) {
-            const id = this.getIdFromValue(value, prevId, relation, index);
+            let id = this.getIdFromValue(value, prevId, relation, index);
             // make sure value has an identifier
-            if (!value["id"] && !value["@id"]) value["id"] = id;
+            if (!value["id"] && !value["@id"]) {
+                value["id"] = id
+            };
 
             // If isVersionOf, materialize object with observedAt
             if (value[this.versionOfPath]) {
                 value = this.materializeObject(value);
+                // Update with materialized ID
+                id = value["id"];
             }
 
             if (value["type"] || value["@type"]) {
@@ -215,7 +218,7 @@ export class Ngsildify {
                     this.resultArray.push(newResult);
                 }
             }
-            
+
             res = {
                 "type": "Relationship",
                 object: id,
@@ -236,7 +239,11 @@ export class Ngsildify {
         } else {
             res = value;
         }
-        if (this.observedAt) res['observedAt'] = this.observedAt;
+
+        // Tag with temporal property if any
+        if (this.observedAt) {
+            res['observedAt'] = this.observedAt;
+        }
         return res;
     }
 

@@ -147,17 +147,16 @@ class Ngsildify {
     }
     materializeObject(input) {
         const materializedObject = Object.assign({}, input);
-        if (materializedObject[this.versionOfPath]) {
-            if (materializedObject[this.versionOfPath]['id']) {
-                materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
-            }
-            else if (materializedObject[this.versionOfPath]['@id']) {
-                materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
-            }
-            else {
-                materializedObject["id"] = materializedObject[this.versionOfPath];
-            }
+        if (materializedObject[this.versionOfPath]['id']) {
+            materializedObject["id"] = materializedObject[this.versionOfPath]['id'];
         }
+        else if (materializedObject[this.versionOfPath]['@id']) {
+            materializedObject["id"] = materializedObject[this.versionOfPath]['@id'];
+        }
+        else {
+            materializedObject["id"] = materializedObject[this.versionOfPath];
+        }
+        // Delete version metadata
         delete materializedObject[this.versionOfPath];
         if (materializedObject['@id']) {
             delete materializedObject['@id'];
@@ -194,13 +193,17 @@ class Ngsildify {
         else if (typeof value === "object" &&
             relation !== "@type" &&
             relation !== "type") {
-            const id = this.getIdFromValue(value, prevId, relation, index);
+            let id = this.getIdFromValue(value, prevId, relation, index);
             // make sure value has an identifier
-            if (!value["id"] && !value["@id"])
+            if (!value["id"] && !value["@id"]) {
                 value["id"] = id;
+            }
+            ;
             // If isVersionOf, materialize object with observedAt
             if (value[this.versionOfPath]) {
                 value = this.materializeObject(value);
+                // Update with materialized ID
+                id = value["id"];
             }
             if (value["type"] || value["@type"]) {
                 // create new result from this object and return the relationship
@@ -232,8 +235,10 @@ class Ngsildify {
         else {
             res = value;
         }
-        if (this.observedAt)
+        // Tag with temporal property if any
+        if (this.observedAt) {
             res['observedAt'] = this.observedAt;
+        }
         return res;
     }
     getIdFromValue(value, prevId, relation, index) {
