@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ngsildify = void 0;
+const context_mapper_1 = require("./context_mapper");
 const { parse } = require('wkt');
 class Ngsildify {
     constructor(options) {
@@ -104,11 +105,17 @@ class Ngsildify {
                         result[key] = value;
                     }
                     else if (key === "@type") {
-                        result["type"] = value;
+                        if (typeof value === "string") {
+                            result["type"] = (0, context_mapper_1.mapType)(value);
+                        }
+                        else {
+                            result["type"] = value;
+                        }
                         delete result["@type"];
                     }
                     else {
-                        result[key] = await this.handleValue(value, id, key, 1);
+                        const mappedKey = (0, context_mapper_1.mapType)(key);
+                        result[mappedKey] = await this.handleValue(value, id, mappedKey, 1);
                         // Add transformation of WKT to GeoJSON
                         if (key === "http://www.opengis.net/ont/geosparql#asWKT") {
                             const v2 = value;
