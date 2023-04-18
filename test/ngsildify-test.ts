@@ -188,7 +188,7 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
           value:
             "<http://www.opengis.net/def/crs/EPSG/0/4979> POINT(50.86127751869 4.28904533370 45.9)",
         },
-        id: "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1",
+        id: "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/https://smartdatamodels.org/datamodel.oslo/infrastructureelement.geometry/1",
       },
       {
         "@context": [
@@ -200,10 +200,10 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
           type: "Relationship",
           object: "http://www.wikidata.org/entity/Q56245086",
         },
-        "http://www.w3.org/ns/locn#geometry": {
+        "https://smartdatamodels.org/dataModel.OSLO/InfrastructureElement.geometry": {
           type: "Relationship",
           object:
-            "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/http://www.w3.org/ns/locn#geometry/1",
+            "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1/https://smartdatamodels.org/datamodel.oslo/infrastructureelement.geometry/1",
         },
         id: "https://lodi.ilabt.imec.be/odala/data/observations/8245000782/observationcollection.hasfeatureofinterest/1",
       },
@@ -417,8 +417,8 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
         ],
         id: "https://blue-bike.be/stations/capacity/103#2022-09-08T10:11:03",
         observedAt: "2022-09-08T10:11:03",
-        type: "http://schema.org/Capacity",
-        "http://schema.org/totalCapacity": {
+        type: "https://smartdatamodels.org/dataModel.OSLO/Capacity",
+        "https://smartdatamodels.org/dataModel.OSLO/Capacity.total": {
           type: "Property",
           value: "27",
           observedAt: "2022-09-08T10:11:03",
@@ -455,18 +455,18 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
           "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
         ],
         type: "https://smartdatamodels.org/dataModel.OSLO/BicycleParkingStation",
-        "http://schema.org/capacity": {
+        "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity": {
           type: "Relationship",
           object:
             "https://blue-bike.be/stations/capacity/103#2022-09-08T10:11:03",
           observedAt: "2022-09-08T10:11:03",
         },
-        "http://schema.org/name": {
+        "https://smartdatamodels.org/name": {
           type: "Property",
           value: "Station Geel",
           observedAt: "2022-09-08T10:11:03",
         },
-        "http://www.w3.org/ns/locn#geometry": {
+        "https://smartdatamodels.org/dataModel.OSLO/InfrastructureElement.geometry": {
           type: "Relationship",
           object:
             "https://blue-bike.be/stations/geometry/103#2022-09-08T10:11:03",
@@ -508,46 +508,46 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
         id: "https://blue-bike.be/resourcereports/103#2022-09-08T10:11:03",
         observedAt: "2022-09-08T10:11:03",
         type: "https://smartdatamodels.org/dataModel.OSLO/ResourceReport",
-        "http://purl.org/dc/elements/1.1/date": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.reportTime": {
           type: "Property",
           value: "2022-09-08T10:11:03",
           observedAt: "2022-09-08T10:11:03",
         },
-        "http://purl.org/dc/terms/type": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.type": {
           type: "Relationship",
           object:
             "https://blue-bike.be/resourcereports/type/103#2022-09-08T10:11:03",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#Mobiliteitsdienst.vervoermiddel":
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.meansOfTransport":
           {
             type: "Relationship",
             object:
               "https://blue-bike.be/resourcereports/vervoermiddel/103#2022-09-08T10:11:03",
             observedAt: "2022-09-08T10:11:03",
           },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#location": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.location": {
           type: "Relationship",
           object: "https://blue-bike.be/stations/103",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#number": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.number": {
           type: "Property",
           value: "12",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#propulsion": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.actuator": {
           type: "Relationship",
           object:
             "https://blue-bike.be/resourcereports/actuator/103#2022-09-08T10:11:03",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#service": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.service": {
           type: "Relationship",
           object: "https://blue-bike.be/#me",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#status": {
+        "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.status": {
           type: "Relationship",
           object:
             "https://blue-bike.be/resourcereports/status/103#2022-09-08T10:11:03",

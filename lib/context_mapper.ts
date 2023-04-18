@@ -1,61 +1,52 @@
 // hardcoded map of type values to use during transformation
+// from the OSLO Passenger Hubs semantic data model to the OSLO SDM
 const map: { [name: string]: string } = {
-  BicycleParkingStation:
-    "https://smartdatamodels.org/dataModel.OSLO/BicycleParkingStation",
-  BicycleParkingStationForecast:
-    "https://smartdatamodels.org/dataModel.OSLO/BicycleParkingStationForecast",
-  "InfrastructureElement.geometry":
-    "https://smartdatamodels.org/dataModel.OSLO/InfrastructureElement.geometry",
-  "ParkingFacility.capacity":
-    "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity",
-  ResourceReport: "https://smartdatamodels.org/dataModel.OSLO/ResourceReport",
-  "ResourceReport.actuator":
+  ///// type: ResourceReport
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#ResourceReport": 
+    "https://smartdatamodels.org/dataModel.OSLO/ResourceReport",
+  // ResourceReport.actuator
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#propulsion":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.actuator",
-  "ResourceReport.location":
+  // ResourceReport.location
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#location":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.location",
-  "ResourceReport.meansOfTransport":
+  // ResourceReport.meansOfTransport
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#Mobiliteitsdienst.vervoermiddel":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.meansOfTransport",
-  "ResourceReport.number":
+  // ResourceReport.number
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#number":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.number",
-  "ResourceReport.reportTime":
-    "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.reportTime",
-  "ResourceReport.service":
+  // ResourceReport.service
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#service":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.service",
-  "ResourceReport.status":
+  // ResourceReport.status
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#status":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.status",
-  "ResourceReport.type":
+  // ResourceReport.type
+  "http://purl.org/dc/terms/type":
     "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.type",
-  ResourceReportForecast:
-    "https://smartdatamodels.org/dataModel.OSLO/ResourceReportForecast",
-  address: "https://smartdatamodels.org/address",
-  alternateName: "https://smartdatamodels.org/alternateName",
-  areaServed: "https://smartdatamodels.org/areaServed",
-  dataProvider: "https://smartdatamodels.org/dataProvider",
-  dateCreated: "https://smartdatamodels.org/dateCreated",
-  dateModified: "https://smartdatamodels.org/dateModified",
-  description: "http://purl.org/dc/terms/description",
-  id: "@id",
-  location: "ngsi-ld:location",
-  name: "https://smartdatamodels.org/name",
-  "ngsi-ld": "https://uri.etsi.org/ngsi-ld/",
-  owner: "https://smartdatamodels.org/owner",
-  seeAlso: "https://smartdatamodels.org/seeAlso",
-  source: "https://smartdatamodels.org/source",
-  type: "@type",
-  validFrom: "https://smartdatamodels.org/dataModel.OSLO/validFrom",
-  validTo: "https://smartdatamodels.org/dataModel.OSLO/validTo",
-  validity: "https://smartdatamodels.org/dataModel.OSLO/validity",
+  // ResourceReport.reportTime
+  "http://purl.org/dc/elements/1.1/date":
+    "https://smartdatamodels.org/dataModel.OSLO/ResourceReport.reportTime",
+  ///// type: BicycleParkingStation
+  "http://schema.mobivoc.org/#BicycleParkingStation":
+    "https://smartdatamodels.org/dataModel.OSLO/BicycleParkingStation",
+  // name
+  "http://schema.org/name": "https://smartdatamodels.org/name",
+  // ParkingFacility.capacity
+  "http://schema.org/capacity":
+    "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity",
+  // InfrastructureElement.geometry
+  "http://www.w3.org/ns/locn#geometry":
+    "https://smartdatamodels.org/dataModel.OSLO/InfrastructureElement.geometry",
+  ///// type: Capacity (This type definition is missing in the SDM)
+  "http://schema.org/Capacity":
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity",
+  // Capacity.total (This property definition is missing in the SDM)
+  "http://schema.org/totalCapacity":
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity.total" 
 };
 
 export const mapType = (type: string): string => {
-  if (!type.startsWith("http")) {
-    // nothing to do, it's not a URI schema
-    return type;
-  }
-  const typeName = type.split("#")[1];
-  if (!typeName) {
-    // nothind to do, no type identifier
-    return type;
-  }
-  return map[typeName] || type;
+  return map[type] || type;
 };
