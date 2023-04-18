@@ -1,4 +1,5 @@
 import { JsonLdContext } from "jsonld-context-parser";
+import { mapType } from "./context_mapper";
 const { parse } = require('wkt');
 
 export interface NgsildifyOptions {
@@ -106,7 +107,11 @@ export class Ngsildify {
                     } else if (key === "type") {
                         result[key] = value;
                     } else if (key === "@type") {
-                        result["type"] = value;
+                        if (typeof value === "string") {
+                            result["type"] = mapType(value);
+                          } else {
+                            result["type"] = value;
+                          }
                         delete result["@type"];
                     } else {
                         result[key] = await this.handleValue(value, id, key, 1);
