@@ -34,17 +34,25 @@ const map: { [name: string]: string } = {
   // name
   "http://schema.org/name": "https://smartdatamodels.org/name",
   // ParkingFacility.capacity
-  "http://schema.org/capacity":
+  "http://schema.org/capacity": // This is not correct but still present in the LDES
+    "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity",
+  "http://schema.mobivoc.org/#capacity":
     "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity",
   // InfrastructureElement.geometry
   "http://www.w3.org/ns/locn#geometry":
     "https://smartdatamodels.org/dataModel.OSLO/InfrastructureElement.geometry",
   ///// type: Capacity (This type definition is missing in the SDM)
-  "http://schema.org/Capacity":
+  "http://schema.org/Capacity": // This is not correct but still present in the LDES
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity",
+  "http://schema.mobivoc.org/#Capacity":
     "https://smartdatamodels.org/dataModel.OSLO/Capacity",
   // Capacity.total (This property definition is missing in the SDM)
   "http://schema.org/totalCapacity":
-    "https://smartdatamodels.org/dataModel.OSLO/Capacity.total" 
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity.total",
+  "http://schema.mobivoc.org/#totalCapacity":
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity.total",
+  "https://purl.eu/ns/mobility/passenger-transport-hubs#vehicleType":
+    "https://smartdatamodels.org/dataModel.OSLO/Capacity.vehicleType" 
 };
 
 export const mapType = (type: string): string => {
