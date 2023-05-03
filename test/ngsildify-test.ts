@@ -312,11 +312,11 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
         "http://purl.org/dc/terms/isVersionOf": {
           "@id": "https://blue-bike.be/stations/103",
         },
-        "http://schema.org/capacity": {
+        "http://schema.mobivoc.org/#capacity": {
           "@id":
             "https://blue-bike.be/stations/capacity/103#2022-09-08T10:11:03",
-          "@type": "http://schema.org/Capacity",
-          "http://schema.org/totalCapacity": {
+          "@type": "http://schema.mobivoc.org/#Capacity",
+          "http://schema.mobivoc.org/#totalCapacity": {
             "@type": "http://www.w3.org/2001/XMLSchema#integer",
             "@value": "27",
           },
@@ -423,7 +423,7 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
           value: "27",
           observedAt: "2022-09-08T10:11:03",
         },
-        "https://purl.eu/ns/mobility/passenger-transport-hubs#vehicleType": {
+        "https://smartdatamodels.org/dataModel.OSLO/Capacity.vehicleType": {
           type: "Relationship",
           object:
             "https://blue-bike.be/stations/vehicleType/103#2022-09-08T10:11:03",
