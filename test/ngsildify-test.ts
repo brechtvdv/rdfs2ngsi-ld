@@ -415,25 +415,6 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
         "@context": [
           "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
         ],
-        id: "https://blue-bike.be/stations/capacity/103#2022-09-08T10:11:03",
-        observedAt: "2022-09-08T10:11:03",
-        type: "https://smartdatamodels.org/dataModel.OSLO/Capacity",
-        "https://smartdatamodels.org/dataModel.OSLO/Capacity.total": {
-          type: "Property",
-          value: "27",
-          observedAt: "2022-09-08T10:11:03",
-        },
-        "https://smartdatamodels.org/dataModel.OSLO/Capacity.vehicleType": {
-          type: "Relationship",
-          object:
-            "https://blue-bike.be/stations/vehicleType/103#2022-09-08T10:11:03",
-          observedAt: "2022-09-08T10:11:03",
-        },
-      },
-      {
-        "@context": [
-          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-        ],
         id: "https://blue-bike.be/stations/geometry/103#2022-09-08T10:11:03",
         observedAt: "2022-09-08T10:11:03",
         type: "http://www.w3.org/ns/locn#Geometry",
@@ -456,9 +437,8 @@ describe("RDFS 2 NGSI-LD conversion library", () => {
         ],
         type: "https://smartdatamodels.org/dataModel.OSLO/BicycleParkingStation",
         "https://smartdatamodels.org/dataModel.OSLO/ParkingFacility.capacity": {
-          type: "Relationship",
-          object:
-            "https://blue-bike.be/stations/capacity/103#2022-09-08T10:11:03",
+          type: "Property",
+          value: "27",
           observedAt: "2022-09-08T10:11:03",
         },
         "https://smartdatamodels.org/name": {

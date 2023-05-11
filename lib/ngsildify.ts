@@ -1,5 +1,6 @@
 import { JsonLdContext } from "jsonld-context-parser";
 import { mapType } from "./context_mapper";
+import { mapCapacity } from "./capacity_mapper";
 const { parse } = require('wkt');
 
 export interface NgsildifyOptions {
@@ -79,7 +80,7 @@ export class Ngsildify {
                 rootObjects.push(tempHandleRoot);
         }
         this.resultArray.push(...rootObjects);
-        return this.resultArray
+        return mapCapacity(this.resultArray)
     }
 
     protected async handleRoot(input: any): Promise<any> {
